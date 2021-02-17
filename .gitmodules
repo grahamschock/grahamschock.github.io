@@ -1,0 +1,3 @@
+[submodule "advos_book"]
+	path = advos_book
+	url = https://github.com/gwu-cs-advos/advos_book.git
