@@ -1,0 +1,6 @@
+,,,,,
+,Repersent -21 using 1s complement,A = 1001 B = 1111 (A+B) = ?,Repersent -11 in 2s Complement,What is HEX A3 in binary,How would you shift a 2s complement integer to multiply by 4
+,A = 1 B = 0 (A NAND B) = ?,Draw a diagram for (A XOR !B) AND C,What is the function for the following transistor circuit,Simplify the following boolean expression,What is the function for the following boolean circuit
+,What is the difference between branch and jmp?,Write LC3 instruction to copy the contents of R1 to R2,What is the largest PC offset we can get for a LD instruction,What are the 6 steps of the instruction cycle, What does LC3 stand for
+,What are the two types of latches?,How many flip flops do you need for a FSM with 9 states,Why do we need a clock to operate latches,Design an FSM to tell whether a binary string has 2 0s,Draw a FSM to tell whether a binary string has an %3 number of 1s
+,If a processor has 50 opcodes how many bits are needed to encode the opcode.,What  do the Program Counter and Instruction Register contain?,"If 32 bit processor has 50 opcodes, 32 registers how many bits can we have for the offset for a load instruction LD Reg,Offset",If X is an odd number what is Y= ( (X <<31)>>31)& 0x1,What does this LC3 instruction do: 0110 010 011 111100
