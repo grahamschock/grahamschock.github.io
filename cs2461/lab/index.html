@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>XOR LAB (Week 7)</title>
+    <link type="text/css" rel="stylesheet" href="assets/css/bootstrap.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/bootstrap-responsive.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/pilcrow.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/hljs-github.min.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/style.css"/>
+    <style>
+    body {
+      background: url('assets/img/textured_paper.png') repeat top left;
+      background-color: #f6f6f6;
+    }
+    </style>
+  </head>
+<body>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3"><ul class="nav nav-list">
+    <li class="sidebar-header-1"><a href="#xor-lab-(week-7)">XOR LAB (Week 7)</a></li>
+    <li class="sidebar-header-2"><a href="#lab-description">Lab description</a></li>
+    <li class="sidebar-header-2"><a href="#writing-in-c-code">Writing in C code</a></li>
+    <li class="sidebar-header-2"><a href="#planning-our-lc3">Planning our LC3</a></li>
+    <li class="sidebar-header-2"><a href="#creating-an-array">Creating an array</a></li>
+    <li class="sidebar-header-2"><a href="#creating-a-temp-value">Creating a temp value</a></li>
+    <li class="sidebar-header-2"><a href="#logic-for-our-for-loop">Logic for our for loop</a></li>
+    <li class="sidebar-header-2"><a href="#getting-a-value-from-an-array">Getting a value from an array</a></li>
+    <li class="sidebar-header-2"><a href="#implementing-bitwise-xor">Implementing BITWISE XOR</a></li>
+    <li class="sidebar-header-2"><a href="#storing-a-value-into-the-array">Storing a value into the array</a></li>
+    <li class="sidebar-header-2"><a href="#checking-we-are-correct">Checking we are correct</a></li>
+</ul>
+      </div>
+      <div class="span9 main"><h1 id="xor-lab-week-7"><a class="header-link" href="#xor-lab-week-7"></a>XOR LAB (Week 7)</h1>
+<h2 id="lab-description"><a class="header-link" href="#lab-description"></a>Lab description</h2>
+<p>Our lab task is:</p>
+<ul class="list">
+<li>Write LC3 assembly program that iterates through an array MyArray of N numbers and replaces with MyArray[i] XOR temp</li>
+<li>MyArray is stored starting at x4000</li>
+<li>temp is a variable in your program – assume it is #55</li>
+<li>N is a variable (length of array) in your program – assume it is 10</li>
+</ul>
+<h2 id="writing-in-c-code"><a class="header-link" href="#writing-in-c-code"></a>Writing in C code</h2>
+<p>First lets write out the problem in C code so we know what we have to implement in LC3. 
+We can generate the following C code.</p>
+<pre class="hljs"><code><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">int</span> arr[<span class="hljs-number">10</span>] = {<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>}; <span class="hljs-comment">//create array</span>
+    <span class="hljs-keyword">int</span> temp = <span class="hljs-number">55</span>; <span class="hljs-comment">//create temp</span>
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) { <span class="hljs-comment">//for loop</span>
+        arr[i] = arr[i] ^ temp; <span class="hljs-comment">//replace arr[i] with bitwise xor of arr[i] and temp</span>
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;arr[%d]: %x (in hex)\n&quot;</span>, i, arr[i]);
+    }
+}</code></pre><p>Let&#39;s run our code so we can verify our LC3 is correct once we finish.</p>
+<pre class="hljs"><code>$ gcc xor<span class="hljs-selector-class">.c</span> -o test
+$ ./test
+arr<span class="hljs-selector-attr">[0]</span>: <span class="hljs-number">37</span> (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[1]</span>: <span class="hljs-number">36</span> (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[2]</span>: <span class="hljs-number">35</span> (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[3]</span>: <span class="hljs-number">34</span> (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[4]</span>: <span class="hljs-number">33</span> (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[5]</span>: <span class="hljs-number">32</span> (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[6]</span>: <span class="hljs-number">31</span> (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[7]</span>: <span class="hljs-number">30</span> (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[8]</span>: <span class="hljs-number">3</span>f (<span class="hljs-keyword">in</span> hex)
+arr<span class="hljs-selector-attr">[9]</span>: <span class="hljs-number">3</span>e (<span class="hljs-keyword">in</span> hex)</code></pre><p>Awesome! Now we can start writing our LC3.</p>
+<h2 id="planning-our-lc3"><a class="header-link" href="#planning-our-lc3"></a>Planning our LC3</h2>
+<p>It is almost impossible to directly translate a whole C program in one go into LC3.
+We notice we can break up 6 distinct elements in our C code:</p>
+<ol class="list">
+<li>Creating our array</li>
+<li>Creating our temp</li>
+<li>For loop</li>
+<li>Getting a value from array</li>
+<li>Bitwise XOR</li>
+<li>Storing a value into an array</li>
+</ol>
+<p>We can think about each part seperately and then combine at the end. </p>
+<h2 id="creating-an-array"><a class="header-link" href="#creating-an-array"></a>Creating an array</h2>
+<p>An array in C is just a contigous pieces of memory. We will use the assembler directive <code>.FILL #n</code> to store an int into an address of memory starting at x4000. The assembler is smart enough to move onto the next address once it has filled the previous one.</p>
+<p>Our code can look something like this: </p>
+<pre class="hljs"><code><span class="hljs-string">.ORIG</span> x4000
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#0</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#1</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#2</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#3</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#4</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#5</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#6</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#7</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#8</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#9</span>
+<span class="hljs-string">.END</span></code></pre><p>When we run this in the simulator we see that it fills up the memory addresses like an array in C.
+<img src="images/array.png" alt=""></p>
+<p>This covers how to create an array in LC3. We will get to how to accsess the elemetns later on.</p>
+<h2 id="creating-a-temp-value"><a class="header-link" href="#creating-a-temp-value"></a>Creating a temp value</h2>
+<p>Now we want to translate <code>int temp = 55</code> into LC3. We want to be able to do logic with the temp variable i.e do an XOR with it. Therefore we want to store temp into a register. We will first use <code>.FILL</code> to put <code>#55</code> in memory and then load from a label.</p>
+<pre class="hljs"><code><span class="hljs-string">.ORIG</span> x3000
+LD R0, TEMP; R0 = mem[TEMP] = 55
+HALT
+TEMP <span class="hljs-string">.FILL</span> <span class="hljs-comment">#55</span>
+<span class="hljs-string">.END</span></code></pre><h2 id="logic-for-our-for-loop"><a class="header-link" href="#logic-for-our-for-loop"></a>Logic for our for loop</h2>
+<p>We usually have a predefined structure when writing a for loop in assembly. </p>
+<ul class="list">
+<li>Counter that shows how many iterations are left and will decrement</li>
+<li>Labels that point to the start of our loop and where we exit when counter = 0</li>
+<li>Branches that go to the labels</li>
+</ul>
+<pre class="hljs"><code>.ORIG x3000
+LD R1, COUNTER; <span class="hljs-regexp">//</span>R1 = mem[COUNTER] = <span class="hljs-number">10</span>
+loop BRnz DONE; <span class="hljs-regexp">//</span>Branch to DONE <span class="hljs-keyword">if</span> counter(R1) = <span class="hljs-number">0</span>
+; <span class="hljs-regexp">//</span>For loop body instructions here
+ADD R1, R1, <span class="hljs-comment">#-1; //Decrement counter</span>
+BRnzp loop; <span class="hljs-regexp">//g</span>o back to begining of loop to either re run body or goto done
+DONE HALT
+COUNTER .FILL <span class="hljs-comment">#10</span></code></pre><h2 id="getting-a-value-from-an-array"><a class="header-link" href="#getting-a-value-from-an-array"></a>Getting a value from an array</h2>
+<p>We have loaded values from memory before (when we loaded temp). We might say we can do something similar for getting values in an array. Let&#39;s look at some code that could get arr[0] from an array. </p>
+<pre class="hljs"><code><span class="hljs-string">.ORIG</span> x3000
+LD R2, ARRAY_START
+HALT
+<span class="hljs-string">.END</span>
+
+<span class="hljs-string">.ORIG</span> x4000
+ARRAY_START <span class="hljs-string">.FILL</span> <span class="hljs-comment">#0</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#1</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#2</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#3</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#4</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#5</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#6</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#7</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#8</span>
+<span class="hljs-string">.FILL</span> <span class="hljs-comment">#9</span>
+<span class="hljs-string">.END</span></code></pre><p>THIS IS <strong>INCORRECT</strong></p>
+<p>When we run this code in the simulator we get the following error:
+<img src="images/array_start.png" alt=""></p>
+<p>Let&#39;s look at the instruction for LD to see why:
+<img src="images/ld.png" alt=""></p>
+<p>We are trying to repersent the difference between our current PC and x4000 using a 9bit 2s complement PC offset. 
+The largest positive PC offset we can repersent with 9bit 2s complement is <code>255</code>.
+Which is not enough to go from around x3000 to x4000.</p>
+<p>Therefore we have to be more creative about how we acsess mem[x4000]. </p>
+<p>In order to do this we will use <code>LDR</code> to acsess mem[x4000]. </p>
+<p>It might require some reading in the slides or textbook to look at what LDR does, but if we can set x4000 into a register i.e R3 then we can acsess a memory location at mem[R3] using the following LC3 code:</p>
+<pre class="hljs"><code><span class="hljs-attribute">LDR</span> R<span class="hljs-number">4</span>, R<span class="hljs-number">3</span>, x<span class="hljs-number">0</span>; // R<span class="hljs-number">4</span> = mem[R<span class="hljs-number">3</span> + <span class="hljs-number">0</span>] = mem[x<span class="hljs-number">4000</span>] = arr[<span class="hljs-number">0</span>]</code></pre><p>In order set R3 to x4000 we can use the same logic we used for temp and counter:</p>
+<pre class="hljs"><code><span class="hljs-meta">.ORIG</span> x3000
+LD <span class="hljs-built_in">R3</span>, ARRAY_START
+LDR <span class="hljs-built_in">R4</span>, <span class="hljs-built_in">R3</span>, x0<span class="hljs-comment">; //R4 = mem[R3 + 0] = mem[x4000] = arr[0]</span>
+ARRAY_START .FILL x4000
+<span class="hljs-meta">.END</span></code></pre><p>An important thing to notice is that R3 contains the address of the start of the array. 
+If we add i to R3 we can retrive arr[i]. </p>
+<p>We can use this idea to iterate through the array with our for loop</p>
+<pre class="hljs"><code>.ORIG x3000
+<span class="hljs-keyword">LD</span> <span class="hljs-built_in">R3</span>, ARRAY_START<span class="hljs-comment">; //R3 = x4000 i.e &amp;arr[0]</span>
+<span class="hljs-keyword">LD</span> <span class="hljs-built_in">R1</span>, COUNTER<span class="hljs-comment">; //R1 = mem[COUNTER] = 10</span>
+
+loop BRnz DONE<span class="hljs-comment">; //Branch to DONE if counter(R1) = 0</span>
+<span class="hljs-comment">; //For loop body instructions here</span>
+LDR <span class="hljs-built_in">R4</span>, <span class="hljs-built_in">R3</span>, x0<span class="hljs-comment">; //R4 = mem[R3 + 0] = arr[i]</span>
+<span class="hljs-keyword">ADD</span> <span class="hljs-built_in">R3</span>, <span class="hljs-built_in">R3</span>, <span class="hljs-meta">#1; //R3++</span>
+<span class="hljs-keyword">ADD</span> <span class="hljs-built_in">R1</span>, <span class="hljs-built_in">R1</span>, <span class="hljs-meta">#-1; //Decrement counter</span>
+BRnzp loop<span class="hljs-comment">; //go back to begining of loop to either re run body or goto done</span>
+
+DONE HALT
+COUNTER .FILL <span class="hljs-meta">#10</span>
+ARRAY_START .FILL x4000</code></pre><h2 id="implementing-bitwise-xor"><a class="header-link" href="#implementing-bitwise-xor"></a>Implementing BITWISE XOR</h2>
+<p>It may seem trivial to implement XOR as it seems like it is just a standard logical operator. </p>
+<p>However, when we look at our bitwise logical instructions we only have accsess to NOT and AND. </p>
+<p>Let&#39;s write XOR&#39;sc truth table to see if we can somehow simplify it into our instructions.</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>AXORB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<p>When we write the boolean function we get:</p>
+<pre class="hljs"><code>AXORB = !AB OR A!B</code></pre><p>Now our function is just in terms of NOT, AND, OR. 
+However, we have no OR function in LC3. Let&#39;s look at the table for OR to see if we can translate it into something else.</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>AORB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>We notice that A OR B is true for everything except 0 0. We can translate this into NAND because NAND is true for everything except 1 1. Therefore we can translate: </p>
+<pre class="hljs"><code>AORB = NOT(!A AND !B)</code></pre><p>Let&#39;s replace this into <code>AXORB</code></p>
+<pre class="hljs"><code><span class="hljs-variable">AXORB</span> = <span class="hljs-function"><span class="hljs-title">NOT</span>((<span class="hljs-title">NOT</span>(<span class="hljs-variable">!AB</span>) <span class="hljs-variable"><span class="hljs-keyword">AND</span></span> <span class="hljs-title">NOT</span>(<span class="hljs-variable">A</span><span class="hljs-variable">!B</span>)))</span></code></pre><p>Now that XOR is expressed in terms of our instructions we can implement it in LC3.</p>
+<pre class="hljs"><code><span class="hljs-comment">;//Let A = R2, B = R4 </span>
+<span class="hljs-symbol">NOT</span> <span class="hljs-built_in">R5</span>, <span class="hljs-built_in">R2</span><span class="hljs-comment">; //R5 = !A</span>
+<span class="hljs-symbol">NOT</span> <span class="hljs-built_in">R6</span>, <span class="hljs-built_in">R4</span><span class="hljs-comment">; //R6 = !B</span>
+<span class="hljs-keyword">AND</span> <span class="hljs-built_in">R5</span>, <span class="hljs-built_in">R5</span>, <span class="hljs-built_in">R4</span><span class="hljs-comment">; //R5 = !AB</span>
+<span class="hljs-symbol">NOT</span> <span class="hljs-built_in">R5</span>, <span class="hljs-built_in">R5</span><span class="hljs-comment">; //R5 = NOT(!AB)</span>
+<span class="hljs-keyword">AND</span> <span class="hljs-built_in">R6</span>, <span class="hljs-built_in">R2</span>, <span class="hljs-built_in">R6</span><span class="hljs-comment">; // R6 = (A!B)</span>
+<span class="hljs-symbol">NOT</span> <span class="hljs-built_in">R6</span>, <span class="hljs-built_in">R6</span><span class="hljs-comment">; // R6 = NOT(A!B)</span>
+<span class="hljs-keyword">AND</span> <span class="hljs-built_in">R5</span>, <span class="hljs-built_in">R5</span>, <span class="hljs-built_in">R6</span><span class="hljs-comment">; // R5 = NOT(!AB) AND NOT(A!B)</span>
+<span class="hljs-symbol">NOT</span> <span class="hljs-built_in">R5</span>, <span class="hljs-built_in">R5</span><span class="hljs-comment">; //// R5 = NOT(NOT(!AB) AND NOT(A!B)) = AXORB</span></code></pre><h2 id="storing-a-value-into-the-array"><a class="header-link" href="#storing-a-value-into-the-array"></a>Storing a value into the array</h2>
+<p>We did most of the work for this before when we had to get the address of arr[i] to load it into a register. </p>
+<p>Now we will use the instruction STR to store a register value into a piece of memory.</p>
+<pre class="hljs"><code><span class="hljs-comment">; Let R3 be the address of arr[i] i.e x4000</span>
+<span class="hljs-keyword">STR</span> <span class="hljs-built_in">R5</span>, <span class="hljs-built_in">R3</span>, x0<span class="hljs-comment">; //arr[i] = mem[x4000] = R5</span></code></pre><p>Now all we have to do is combine all of these components which is left as an exercise to the reader. </p>
+<h2 id="checking-we-are-correct"><a class="header-link" href="#checking-we-are-correct"></a>Checking we are correct</h2>
+<p>We can run our program and then go to x4000 to see if our memory layout is correct.</p>
+<p class="img-container"><img src="images/final_ans.png" alt=""></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+</body>
+</html>
