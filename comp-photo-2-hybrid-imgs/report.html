@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>report.html</title>
+<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8"/>
+<link rel="stylesheet" type="text/css" media="all" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"  />
+<link rel="stylesheet" type="text/css" media="all" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/github.min.css"  /><meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'><style> body { box-sizing: border-box; max-width: 740px; width: 100%; margin: 40px auto; padding: 0 10px; } </style><script id='MathJax-script' async src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'></script><script src='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js'></script><script>document.addEventListener('DOMContentLoaded', () => { document.body.classList.add('markdown-body'); document.querySelectorAll('pre[lang] > code').forEach((code) => { code.classList.add(code.parentElement.lang); }); document.querySelectorAll('pre > code').forEach((code) => { hljs.highlightBlock(code); }); });</script>
+</head>
+
+<body>
+
+<h1 id="csci-3907-computation-photography---project-2-hybrid-images">CSCI 3907: Computation Photography - Project 2: Hybrid Images</h1>
+<h2 id="team-members">Team Members</h2>
+<ul>
+<li>Jack Umina</li>
+<li>Graham Schock</li>
+<li>Jonathan Lee</li>
+</ul>
+<h2 id="main-algorithm">Main Algorithm</h2>
+<p>The main idea of the hybrid image alogorithm is to first apply a low pass filter over the first image. This has the effect of bluring the first input image. Next, the second input filter’s image matrix is subtracted by the same images result after have the low pass filter applied. This yields the second input image with a high pass filter applied. The effect here is the second image’s high frequency features are maintained.</p>
+<h3 id="low-pass-filter">Low Pass Filter</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>low_pass_image <span class="op">=</span> sk.filters.gaussian(img, sigma<span class="op">=</span>sigma, multichannel<span class="op">=</span><span class="va">True</span>)</span></code></pre></div>
+<p>The actual implementation of the low pass filter is a guassian blur with a varying sigma. We implemented it such that the sigma coult be changed with each image pairs. Through our experimentation, it was helpful to adjust the sigma depending on each input image. Some images required a smaller sigma to reduce the amount of blue applied so that its features were more easily reconizable in the final hybrid image.</p>
+<h3 id="high-pass-filter">High Pass Filter</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>high_pass_image <span class="op">=</span> original_image <span class="op">-</span> apply_low_pass_fltr(img, sigma<span class="op">=</span>sigma)</span></code></pre></div>
+<p>The implementation of the high pass filter is taking the original image and subtracting it by the low pass image. This has an effect of producing an image with only the high frequency regions remaining. Similar to the low pass filter, we also found it helpful here to adjust the sigma on a case by case basis. A higher sigma will increase the blur and result in more distinct features in the result of the high pass filter.</p>
+<h3 id="frequency-analysis">Frequency Analysis</h3>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Input Image 1</th>
+<th>Input 1 with low pass filter</th>
+<th>Input Image 2</th>
+<th>Input 2 with high pass filter</th>
+<th>Hybrid Image</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img src="imgs/pisa-cropped.jpg" /></td>
+<td><img src="results/pisa-low.jpg" /></td>
+<td><img src="imgs/carrot-cropped.jpg" /></td>
+<td><img src="results/carrot-high.jpg" /></td>
+<td><img src="results/pisa-carrot.jpg" /></td>
+</tr>
+<tr class="even">
+<td><img src="results/pisa-fa.png" /></td>
+<td><img src="results/pisa-low-fa.png" /></td>
+<td><img src="results/carrot-fa.png" /></td>
+<td><img src="results/carrot-high-fa.png" /></td>
+<td><img src="results/hybrid-fa.png" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="result-comparisons">Result Comparisons</h3>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Input Image 1</th>
+<th>Input 1 with low pass filter</th>
+<th>Input Image 2</th>
+<th>Input 2 with high pass filter</th>
+<th>Hybrid Image</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img src="imgs/dog-cropped.jpg" /></td>
+<td><img src="results/dog-low.jpg" /></td>
+<td><img src="imgs/cat-cropped.jpg" /></td>
+<td><img src="results/cat-high.jpg" /></td>
+<td><img src="results/dog-cat.jpg" /></td>
+</tr>
+<tr class="even">
+<td><img src="imgs/carrot-cropped.jpg" /></td>
+<td><img src="results/carrot-low.jpg" /></td>
+<td><img src="imgs/pisa-cropped.jpg" /></td>
+<td><img src="results/pisa-high.jpg" /></td>
+<td><img src="results/carrot-pisa.jpg" /></td>
+</tr>
+<tr class="odd">
+<td><img src="imgs/pisa-cropped.jpg" /></td>
+<td><img src="results/pisa-low.jpg" /></td>
+<td><img src="imgs/carrot-cropped.jpg" /></td>
+<td><img src="results/carrot-high.jpg" /></td>
+<td><img src="results/pisa-carrot.jpg" /></td>
+</tr>
+<tr class="even">
+<td><img src="imgs/sea-lion-cropped.jpg" /></td>
+<td><img src="results/sea-lion-low.jpg" /></td>
+<td><img src="imgs/polar-bear-cropped.jpg" /></td>
+<td><img src="results/polar-bear-high.jpg" /></td>
+<td><img src="results/sea-lion-polar-bear.jpg" /></td>
+</tr>
+<tr class="odd">
+<td><img src="imgs/moon-cropped.jpg" /></td>
+<td><img src="results/moon-low.jpg" /></td>
+<td><img src="imgs/pizza-cropped.jpg" /></td>
+<td><img src="results/pizza-high.jpg" /></td>
+<td><img src="results/moon-pizza.jpg" /></td>
+</tr>
+</tbody>
+</table>
+<h2 id="automatic-video-generation">Automatic Video Generation</h2>
+<p>Having a user squint their eyes to be able to visualize a low pass filter is not user friendly.</p>
+<p>We decided to implement automatic video generation that would allow the user to see how an image would change if we view the high frequency vs the low frequency.</p>
+<h3 id="implementation">Implementation</h3>
+<p>To make an image look smaller, while keeping the important data and proportions we decided to use different levels of <a href="https://en.wikipedia.org/wiki/JPEG">jpeg</a> compression.</p>
+<p>We use the <a href="https://imagemagick.org/index.php">imagemagik</a> library to compress a hybrid image by a certain percentage to get 80 frames of gradual image compression.</p>
+<p>After we compress we want to add padding around the image so that all frames are the same size so we can eventually combine them into a video. We decided to center the image in the frame and fill the rest with black pixels.</p>
+<p>After we generate all of the frames we would then combine them into a .gif file with a small delay between each frame and adding more time to the first and last frame so that the user can see the difference between the high pass and the low pass filters.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_frame(compression_percent, img1, img2):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    hybrid_img <span class="op">=</span> hybrid(img1, img2)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    compress_hybrid <span class="op">=</span> compress(compression_percentage), hybrid_img) <span class="co"># ImageMagick function to compress an image by a certain percentage</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> add_padding(compress_hybrid, sizeof(hybrid_img)) <span class="co"># Add padding so that all of the frames are the same size</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">20</span>, <span class="dv">100</span>):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    image_arr.push(generate_frame(i, img1, img2)</span></code></pre></div>
+<h3 id="results">Results</h3>
+<figure>
+<img src="movies/cat.gif" alt="Cat and Dog" /><figcaption aria-hidden="true">Cat and Dog</figcaption>
+</figure>
+<figure>
+<img src="movies/pisa.gif" alt="Carrot and Pisa" /><figcaption aria-hidden="true">Carrot and Pisa</figcaption>
+</figure>
+<figure>
+<img src="movies/pres.gif" alt="GW Preseident and Bear" /><figcaption aria-hidden="true">GW Preseident and Bear</figcaption>
+</figure>
+<figure>
+<img src="movies/moon.gif" alt="Pizza and Moon" /><figcaption aria-hidden="true">Pizza and Moon</figcaption>
+</figure>
+
+</body>
+</html>
