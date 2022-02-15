@@ -5,9 +5,13 @@
 - Graham Schock
 - Jonathan Lee
 
+## Background
+
+Hybrid images are static images composed of different frequencies of its input images. This gives an illusion of different images depending on the distance the viewer views the image at. The idea is that at close distances, the high frequency elements of an image are clear and distinct. Once the viewer moves away from the image, less and less high frequency components remain and the viewer is only able to make out the lower frequency portions. Hybrid images combine each of these elements from two different photos to create a combination of the two in the ouput. The approach used in this project is described in the [SIGGRAPH 2006 paper](http://cvcl.mit.edu/publications/OlivaTorralb_Hybrid_Siggraph06.pdf) by Oliva, Torralba, and Schyns.
+
 ## Main Algorithm
 
-The main idea of the hybrid image alogorithm is to first apply a low pass filter over the first image. This has the effect of bluring the first input image. Next, the second input filter's image matrix is subtracted by the same images result after have the low pass filter applied. This yields the second input image with a high pass filter applied. The effect here is the second image's high frequency features are maintained.
+The main idea of the hybrid image alogorithm is to first apply a low pass filter over the first image. This has the effect of bluring the first input image. Next, the second input filter's image matrix is subtracted by the same images result after have the low pass filter applied. This yields the second input image with a high pass filter applied. The effect here is the second image's high frequency features are maintained. Finally, the low pass filtered image is averaged with the high pass filtered image to yield the hybrid image.
 
 ### Low Pass Filter
 
@@ -26,6 +30,9 @@ high_pass_image = original_image - apply_low_pass_fltr(img, sigma=sigma)
 The implementation of the high pass filter is taking the original image and subtracting it by the low pass image. This has an effect of producing an image with only the high frequency regions remaining. Similar to the low pass filter, we also found it helpful here to adjust the sigma on a case by case basis. A higher sigma will increase the blur and result in more distinct features in the result of the high pass filter.
 
 ### Frequency Analysis
+
+Here we look at the log magnitude of the Fourier transform on each of image of the process. Something particularly interesting is how the low pass filter affects the frequency graph by blurring the input image.
+
 | Input Image 1 | Input 1 with low pass filter | Input Image 2 | Input 2 with high pass filter | Hybrid Image |
 | --- | --- | --- | --- | --- |
 | ![](imgs/pisa-cropped.jpg) | ![](results/pisa-low.jpg) | ![](imgs/carrot-cropped.jpg) | ![](results/carrot-high.jpg) | ![](results/pisa-carrot.jpg) |
@@ -78,3 +85,42 @@ for i in range(20, 100):
 ![GW Preseident and Bear](movies/pres.gif)
 
 ![Pizza and Moon](movies/moon.gif)
+
+## Auto Alignment GUI
+One tedious part of creating good hybrid images is aligning two images so features match. 
+For example, we might want to align the eyes of two animals. We would typically use Photoshop or GIMP 
+to manually translate, rotate, and scale the images. We decided to implement a GUI that would automatically transform 
+two (user inputted) reference points on two images. We decided to align 2 points, rather than 3, because we can preserve
+the aspect ratio of both images without distorting them. The result is shown below. The input images should have the low/high pass filters 
+applied already, but for this example, two raw, uncropped images are used.
+
+![alignment gif](results/alignment_gui.gif)
+### The Program
+The GUI is implemented in Pygame because it supports many of the features we need, such as displaying images
+and supporting user input events. A global data structure is used to store the GUI state, such as how many times the 
+user has clicked, where they have clicked, and what image is currently displayed.
+
+### The Alignment Algorithm
+1. Display the first image. Allow the user to click on two points.
+
+![](results/first_im.png)
+
+2. Display the second image. Allow the user to click on two points.
+
+   ![](results/second_im.png)
+  
+3. Translate the second image
+   1. Calculate the midpoints between each set of reference points.
+   
+   ![](results/midpoints.png)
+   
+   2. Translate the second image so the midpoint overlaps with the midpoint of the first image.
+4. Rotate the second image
+   1. Calculate the slope of both sets of points, and calculate the angle between them.
+   2. Rotate the second image by the negative angle in degrees.
+5. Scale the second image
+   1. Calculate the distance between both points in both images and calculate the scaling factor.
+   2. Scale the second image by the scaling factor.
+6. Display the first image with the transformed second image.
+
+   ![](results/result.png)

@@ -16,13 +16,16 @@
 <li>Graham Schock</li>
 <li>Jonathan Lee</li>
 </ul>
+<h2 id="background"><a class="header-link" href="#background"></a>Background</h2>
+<p>Hybrid images are static images composed of different frequencies of its input images. This gives an illusion of different images depending on the distance the viewer views the image at. The idea is that at close distances, the high frequency elements of an image are clear and distinct. Once the viewer moves away from the image, less and less high frequency components remain and the viewer is only able to make out the lower frequency portions. Hybrid images combine each of these elements from two different photos to create a combination of the two in the ouput. The approach used in this project is described in the <a href="http://cvcl.mit.edu/publications/OlivaTorralb_Hybrid_Siggraph06.pdf">SIGGRAPH 2006 paper</a> by Oliva, Torralba, and Schyns.</p>
 <h2 id="main-algorithm"><a class="header-link" href="#main-algorithm"></a>Main Algorithm</h2>
-<p>The main idea of the hybrid image alogorithm is to first apply a low pass filter over the first image. This has the effect of bluring the first input image. Next, the second input filter&#39;s image matrix is subtracted by the same images result after have the low pass filter applied. This yields the second input image with a high pass filter applied. The effect here is the second image&#39;s high frequency features are maintained.</p>
+<p>The main idea of the hybrid image alogorithm is to first apply a low pass filter over the first image. This has the effect of bluring the first input image. Next, the second input filter&#39;s image matrix is subtracted by the same images result after have the low pass filter applied. This yields the second input image with a high pass filter applied. The effect here is the second image&#39;s high frequency features are maintained. Finally, the low pass filtered image is averaged with the high pass filtered image to yield the hybrid image.</p>
 <h3 id="low-pass-filter"><a class="header-link" href="#low-pass-filter"></a>Low Pass Filter</h3>
 <pre class="hljs"><code>low_pass_image = sk.filters.gaussian(img, sigma=sigma, multichannel=<span class="hljs-literal">True</span>)</code></pre><p>The actual implementation of the low pass filter is a guassian blur with a varying sigma. We implemented it such that the sigma coult be changed with each image pairs. Through our experimentation, it was helpful to adjust the sigma depending on each input image. Some images required a smaller sigma to reduce the amount of blue applied so that its features were more easily reconizable in the final hybrid image.</p>
 <h3 id="high-pass-filter"><a class="header-link" href="#high-pass-filter"></a>High Pass Filter</h3>
 <pre class="hljs"><code>high_pass_image = original_image - apply_low_pass_fltr(img, sigma=sigma)</code></pre><p>The implementation of the high pass filter is taking the original image and subtracting it by the low pass image. This has an effect of producing an image with only the high frequency regions remaining. Similar to the low pass filter, we also found it helpful here to adjust the sigma on a case by case basis. A higher sigma will increase the blur and result in more distinct features in the result of the high pass filter.</p>
 <h3 id="frequency-analysis"><a class="header-link" href="#frequency-analysis"></a>Frequency Analysis</h3>
+<p>Here we look at the log magnitude of the Fourier transform on each of image of the process. Something particularly interesting is how the low pass filter affects the frequency graph by blurring the input image.</p>
 <table>
 <thead>
 <tr>
@@ -115,6 +118,52 @@
 <p class="img-container"><img src="movies/pisa.gif" alt="Carrot and Pisa"></p>
 <p class="img-container"><img src="movies/pres.gif" alt="GW Preseident and Bear"></p>
 <p class="img-container"><img src="movies/moon.gif" alt="Pizza and Moon"></p>
+<h2 id="auto-alignment-gui"><a class="header-link" href="#auto-alignment-gui"></a>Auto Alignment GUI</h2>
+<p>One tedious part of creating good hybrid images is aligning two images so features match. 
+For example, we might want to align the eyes of two animals. We would typically use Photoshop or GIMP 
+to manually translate, rotate, and scale the images. We decided to implement a GUI that would automatically transform 
+two (user inputted) reference points on two images. We decided to align 2 points, rather than 3, because we can preserve
+the aspect ratio of both images without distorting them. The result is shown below. The input images should have the low/high pass filters 
+applied already, but for this example, two raw, uncropped images are used.</p>
+<p class="img-container"><img src="results/alignment_gui.gif" alt="alignment gif"></p>
+<h3 id="the-program"><a class="header-link" href="#the-program"></a>The Program</h3>
+<p>The GUI is implemented in Pygame because it supports many of the features we need, such as displaying images
+and supporting user input events. A global data structure is used to store the GUI state, such as how many times the 
+user has clicked, where they have clicked, and what image is currently displayed.</p>
+<h3 id="the-alignment-algorithm"><a class="header-link" href="#the-alignment-algorithm"></a>The Alignment Algorithm</h3>
+<ol class="list">
+<li>Display the first image. Allow the user to click on two points.</li>
+</ol>
+<p class="img-container"><img src="results/first_im.png" alt=""></p>
+<ol start="2">
+<li><p>Display the second image. Allow the user to click on two points.</p>
+<p class="img-container"><img src="results/second_im.png" alt=""></p>
+</li>
+<li><p>Translate the second image</p>
+<ol class="list">
+<li>Calculate the midpoints between each set of reference points.</li>
+</ol>
+<p class="img-container"><img src="results/midpoints.png" alt=""></p>
+<ol start="2">
+<li>Translate the second image so the midpoint overlaps with the midpoint of the first image.</li>
+</ol>
+</li>
+<li><p>Rotate the second image</p>
+<ol class="list">
+<li>Calculate the slope of both sets of points, and calculate the angle between them.</li>
+<li>Rotate the second image by the negative angle in degrees.</li>
+</ol>
+</li>
+<li><p>Scale the second image</p>
+<ol class="list">
+<li>Calculate the distance between both points in both images and calculate the scaling factor.</li>
+<li>Scale the second image by the scaling factor.</li>
+</ol>
+</li>
+<li><p>Display the first image with the transformed second image.</p>
+<p class="img-container"><img src="results/result.png" alt=""></p>
+</li>
+</ol>
     </article>
   </body>
 </html>
