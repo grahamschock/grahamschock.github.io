@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>CS3410</title>
+    <style>
+
+      /* https://stackoverflow.com/questions/38261294/how-i-can-make-nice-looking-matrix-of-buttons-with-bootstrap-3 */
+@import "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css";
+
+/* Arrange buttons */
+.btn-matrix>.btn {
+  width: 20%; /* force buttons to have the same width regardless of content */
+}
+.btn-matrix>.btn:nth-child(5n + 6) {
+  clear: left; /* force the button to start a new row of the matrix
+                  (because .btn adds the `float: left;` property) */
+  margin-left: 0; /* because .btn-group adds `margin-left: -1px;` to all buttons */
+}
+.btn-matrix>.btn:nth-child(n + 6) {
+  margin-top: -1px; /* superimpose borders of the buttons from adjacent rows */
+}
+
+/* Fix border radius */
+.btn-matrix>.btn:first-child {
+  border-bottom-left-radius: 0;
+}
+.btn-matrix>.btn:nth-child(3) {
+  border-top-right-radius: 4px !important;
+}
+.btn-matrix>.btn:nth-last-child(3) {
+  border-bottom-left-radius: 4px !important;
+}
+.btn-matrix>.btn:last-child {
+  border-top-right-radius: 0;
+}
+
+.btn-xl {
+    padding: 50px 50px;
+    font-size: 50px;
+    border-radius: 5px;
+}
+
+.btn-header {
+    font-size: 17px;
+    font-weight: bold;
+    border-radius: 5px;    
+}
+
+/* Decorations */
+.btn-matrix {
+    margin: auto;
+    
+}
+div {
+    text-align:center;
+}
+    </style>
+</head>
+<body>
+  <div class="btn-group btn-matrix">
+    <button disabled class="btn btn-default btn-header">Programming</button>
+    <button disabled class="btn btn-default btn-header">IPC</button>
+    <button disabled class="btn btn-default btn-header">Libraries</button >
+    <button disabled class="btn btn-default btn-header">Posix/Security</button>
+    <button disabled class="btn btn-default btn-header">Misc</button>
+    <button type="button" id = "1" onClick = "clicked(this.id)" class="btn btn-default btn-xl">100</button>
+    <button type="button" id = "6" onClick = "clicked(this.id)" class="btn btn-default btn-xl">100</button>
+    <button type="button" id = "11" onClick = "clicked(this.id)" class="btn btn-default btn-xl">100</button>
+    <button type="button" id = "16" onClick = "clicked(this.id)" class="btn btn-default btn-xl">100</button>
+    <button type="button" id = "21" onClick = "clicked(this.id)" class="btn btn-default btn-xl">100</button>
+    <button type="button" id = "2" onClick = "clicked(this.id)" class="btn btn-default btn-xl">200</button>
+    <button type="button" id = "7" onClick = "clicked(this.id)" class="btn btn-default btn-xl">200</button>
+    <button type="button" id = "12" onClick = "clicked(this.id)" class="btn btn-default btn-xl">200</button>
+    <button type="button" id = "17" onClick = "clicked(this.id)" class="btn btn-default btn-xl">200</button>
+    <button type="button" id = "22" onClick = "clicked(this.id)" class="btn btn-default btn-xl">200</button>
+    <button type="button" id = "3" onClick = "clicked(this.id)" class="btn btn-default btn-xl">300</button>
+    <button type="button" id = "8" onClick = "clicked(this.id)" class="btn btn-default btn-xl">300</button>
+    <button type="button" id = "13" onClick = "clicked(this.id)" class="btn btn-default btn-xl">300</button>
+    <button type="button" id = "18" onClick = "clicked(this.id)" class="btn btn-default btn-xl">300</button>
+    <button type="button" id = "23" onClick = "clicked(this.id)" class="btn btn-default btn-xl">300</button>
+    <button type="button" id = "4" onClick = "clicked(this.id)" class="btn btn-default btn-xl">400</button>
+    <button type="button" id = "9" onClick = "clicked(this.id)" class="btn btn-default btn-xl">400</button>
+    <button type="button" id = "14" onClick = "clicked(this.id)" class="btn btn-default btn-xl">400</button>
+    <button type="button" id = "19" onClick = "clicked(this.id)" class="btn btn-default btn-xl">400</button>
+    <button type="button" id = "24" onClick = "clicked(this.id)" class="btn btn-default btn-xl">400</button>
+    <button type="button" id = "5" onClick = "clicked(this.id)" class="btn btn-default btn-xl">500</button>
+    <button type="button" id = "10" onClick = "clicked(this.id)" class="btn btn-default btn-xl">500</button>
+    <button type="button" id = "15" onClick = "clicked(this.id)" class="btn btn-default btn-xl">500</button>
+    <button type="button" id = "20" onClick = "clicked(this.id)" class="btn btn-default btn-xl">500</button>
+    <button type="button" id = "25" onClick = "clicked(this.id)" class="btn btn-default btn-xl">500</button>
+</div>
+
+<script>
+  function clicked(id)
+  {
+      document.getElementById(id).disabled = true;
+      let question = "questions/question"  + id  + ".html"
+      window.open(question);
+  }
+</script>
+
+</body>
+</html>

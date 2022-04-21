@@ -1,0 +1,7 @@
+,,,,,
+,,,,,
+,How many processes in total (including the initial process) are there in the system when the following is executed:,Which output is not possible for the following program:,What do Enviroment Variables allow processes to do?,Where are arguments from main passed?,What is the output for the following:
+,What are 3 types of IPC domain sockets provide?,When will event notifications trigger?,What does polls first argument repersent?,What are 2 places that event loops are used?,What is transparent IPC?
+,When do static libraries link the library into the program?,What is the file extension of a dynamic library?,What does `ldd` output?,How will an undefined symbol be annotated with nm,What are 3 places in CS where dynamic programs are used?
+,What is a system call?,What are 3 system calls?,Who can change the owner of a file?,What will a newly created file have its owner set to?,What does the file permission octal number correspond to?
+,In an android system uids are mainly used to seperate...,What is a overflow attack?,What is a path attack?,How does a Zygote enable optimization?,What are 3 errors in heap allocation?
