@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Final Project: Water Color filter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link type="text/css" rel="stylesheet" href="assets/css/style.css" />
+    <link type="text/css" rel="stylesheet" href="assets/css/pilcrow.css" />
+    <link type="text/css" rel="stylesheet" href="assets/css/hljs-github.min.css"/>
+  </head>
+<body>
+<div class="content"><h1 id="final-project-water-color-filter"><a class="header-link" href="#final-project-water-color-filter"></a>Final Project: Water Color filter</h1>
+<p>In this project I try to develop my own &quot;Water Color&quot; filter that will take a photo and try to make an artistic rendition of that photo. </p>
+<p>For example a type of art I would be trying to imitate would be &quot;Impressionist style art&quot;:</p>
+<p class="img-container"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1024px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg" alt="Impression, Sunrise Monet"></p>
+<p>My approach breaks down into two main categories: generating a water color stroke and using water color strokes to paint an image. </p>
+<h2 id="generating-a-water-color-stroke"><a class="header-link" href="#generating-a-water-color-stroke"></a>Generating a water color stroke</h2>
+<p>A lot of the ideas of how to simulate water color take from <a href="https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints">Tyler Hobbs</a>. However, my implementation is original. </p>
+<h3 id="generating-a-polygon"><a class="header-link" href="#generating-a-polygon"></a>Generating a polygon</h3>
+<p>A water color stroke is essentially a distorted and layered polygon. Our first step is to just make a simple polygon on a blank canvas. </p>
+<p>In my implementation a polygon is just a list of points that generates from a radius, amount of sides and an origin point. </p>
+<p>Here is our constructor implementation: </p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, radius, sides, x, y</span>):</span>
+        self.points = self.__create_points(radius, sides, x, y)
+</code></pre><p>In order to generate a polygon we take the idea that the angle between each point is <code>(pi * 2) / sides</code>.</p>
+<p>This means that we can take an arbitrary point as where <code>i</code> is the point we want to generate </p>
+<pre class="hljs"><code>newX = x + (radius * math.cos(angle * i))
+newY = y + (radius * math.sin(angle * i))</code></pre><p>From this we can make a method that generates a polygon:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__create_points</span>(<span class="hljs-params">self, radius, sides, x, y</span>):</span>
+        points = []
+        angle = ((math.pi * <span class="hljs-number">2</span>) / sides)
+        points.append(Point(x + radius, y))
+        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, sides):
+                newX = x + (radius * math.cos(angle * i))
+                newY = y + (radius * math.sin(angle * i))
+                points.append(Point(newX, newY))
+        <span class="hljs-keyword">return</span> points
+</code></pre><p>Now we can draw this polygon on a blank canvas:</p>
+<p class="img-container"><img src="./out/simple_hex.png" alt="Pink Octogon"></p>
+<h3 id="distorting-a-polygon"><a class="header-link" href="#distorting-a-polygon"></a>Distorting a polygon</h3>
+<p>Now we want this polygon to represent a watercolor stroke or &quot;splotch&quot;. We want to distort the sides of the polygon. </p>
+<p>We do this by making a new random midpoint for each side.</p>
+<p class="img-container"><img src="./out/translation.png" alt="A diagram of how choosing a new midpoint affects the polygon"></p>
+<p>For randomness we use a Gaussian distribution as a sample of possible points.</p>
+<pre class="hljs"><code><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Point</span>:</span>
+        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">apply_random_gauss</span>(<span class="hljs-params">self, sigma = <span class="hljs-number">10</span></span>):</span>
+                self.x = random.gauss(self.x, sigma)
+                self.y = random.gauss(self.y, sigma)
+</code></pre><p>We do this for each side to get a distorted polygon.</p>
+<p class="img-container"><img src="./out/hex_1_distort.png" alt="A polygon distorted 1 time"></p>
+<p>We do this 6 times to create more water type noise. </p>
+<p class="img-container"><img src="./out/hex_6_distort.png" alt="A polygon distorted 6 times"></p>
+<h3 id="layering-polygons"><a class="header-link" href="#layering-polygons"></a>Layering polygons</h3>
+<p>When we have a water stroke majority of the paint focuses in the center while the ends are less opaque. In order to accomplish affect we can layer multiple distorted polygons on top of each other and lower the opacity of each polygon. </p>
+<p>This gives us a pretty nice water color stroke affect: </p>
+<p class="img-container"><img src="./out/hex_water.png" alt="Pink water color stroke"></p>
+<h2 id="using-water-color-on-an-image"><a class="header-link" href="#using-water-color-on-an-image"></a>Using water color on an image</h2>
+<p>In order to accomplish a watercolor affect on an image taken with a camera we have to divide the image into tiles and paint a water color stroke the average color of the tile.</p>
+<h3 id="dividing-an-image-into-tiles"><a class="header-link" href="#dividing-an-image-into-tiles"></a>Dividing an image into tiles</h3>
+<p>We want to divide our image into a list of &quot;tiles&quot;. A tile is just going to be a group of pixels within a certain area. </p>
+<p class="img-container"><img src="./out/tiles.png" alt="Image of flowers divided into large tiles"></p>
+<p>We can do this with the following python code: </p>
+<pre class="hljs"><code>tile_size = <span class="hljs-number">20</span>
+tiles = []
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, img.shape[<span class="hljs-number">0</span>], tile_size):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, img.shape[<span class="hljs-number">1</span>], tile_size):
+                tiles.append(img[i:i+tile_size, j:j+tile_size, :])</code></pre><p>Now we have a list of tiles.</p>
+<h3 id="drawing-watercolor-for-each-tile"><a class="header-link" href="#drawing-watercolor-for-each-tile"></a>Drawing watercolor for each tile</h3>
+<p>Now we iterate through the list of tiles and draw a water color splotch for the average color of each tile. </p>
+<pre class="hljs"><code>num_tile = <span class="hljs-number">0</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">50</span>, img.shape[<span class="hljs-number">0</span>] + <span class="hljs-number">50</span>, tile_size):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">50</span>, img.shape[<span class="hljs-number">1</span>] + <span class="hljs-number">50</span>, tile_size):
+                avgcolor = color.get_avg_color(tiles[num_tile])
+                <span class="hljs-comment"># Write blob of average color at (i, j)</span>
+                num_tile += <span class="hljs-number">1</span></code></pre><p>This gives us an abstracted water color painting of an image.</p>
+<p class="img-container"><img src="./out/flower_1.png" alt="Water color tile size (10)"></p>
+<h2 id="different-parameters-and-conclusion"><a class="header-link" href="#different-parameters-and-conclusion"></a>Different Parameters and Conclusion</h2>
+<p>There are two main parameters we can change:</p>
+<ul class="list">
+<li>The amount of distortions in the polygon (how watery/random the stroke is)</li>
+<li>The size of the tile (how &quot;abstract&quot; the painting is)</li>
+</ul>
+<h3 id="different-distortion-levels"><a class="header-link" href="#different-distortion-levels"></a>Different distortion levels</h3>
+<p class="img-container"><img src="./input/graham.jpg'" alt="Base image"></p>
+<p>0 distortions (just octagons)</p>
+<p class="img-container"><img src="./out/graham_0_distort.png" alt="0 distortions"></p>
+<p>2 distortions</p>
+<p class="img-container"><img src="./out/graham_2.png" alt="2 distortions"></p>
+<p>6 distortions</p>
+<p class="img-container"><img src="./out/graham_6.png" alt="6 distortions"></p>
+<h3 id="different-tile-size"><a class="header-link" href="#different-tile-size"></a>Different tile size</h3>
+<p class="img-container"><img src="./input/house.jpg" alt="Base image"></p>
+<p>Tile size of 150*150 pixels:</p>
+<p class="img-container"><img src="./out/house_150.png" alt="Tilesize of 150"></p>
+<p>Tile size of 30*30 pixels: </p>
+<p class="img-container"><img src="./out/house_30.png" alt="Tilesize of 30"></p>
+<p>Tile size of 5 * 5 pixels:</p>
+<p class="img-container"><img src="./out/house_5.png" alt="Tilesize of 5"></p>
+<h3 id="where-watercolor-does-not-work-as-well"><a class="header-link" href="#where-watercolor-does-not-work-as-well"></a>Where watercolor does not work as well</h3>
+<p>Things with boring colors (like walls)</p>
+<p class="img-container"><img src="./input/wall.jpg" alt="SEH wall"></p>
+<p class="img-container"><img src="./out/bad_wall.png" alt="SEH"></p>
+<p>Things with lots of details</p>
+<p class="img-container"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Panorpa_communis_2006-07-11.jpg/572px-Panorpa_communis_2006-07-11.jpg" alt="bug"></p>
+<p class="img-container"><img src="./out/bug_1.png" alt="bug water"></p>
+<h3 id="my-favorite-pictures"><a class="header-link" href="#my-favorite-pictures"></a>My favorite pictures</h3>
+<p>Things with water: </p>
+<p class="img-container"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Bucephala-albeola-010.jpg/640px-Bucephala-albeola-010.jpg" alt="Duck"></p>
+<p class="img-container"><img src="./out/duck_1.png" alt="Duck"></p>
+<p>Flowers and plants with simple colors:</p>
+<p class="img-container"><img src="./input/dandel.jpg" alt="dandelion"></p>
+<p class="img-container"><img src="./out/dandel_1.png" alt="dandelion abstract"></p>
+<p>Landscapes:</p>
+<p class="img-container"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/My_Public_Lands_Roadtrip-_Pariette_Wetlands_in_Utah_%2820220345702%29.jpg/640px-My_Public_Lands_Roadtrip-_Pariette_Wetlands_in_Utah_%2820220345702%29.jpg?download" alt="Utah Wetlands"></p>
+<p class="img-container"><img src="./out/utah.png" alt="Utah Abstract"></p>
+</div>
+</body>
+</html>
